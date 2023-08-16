@@ -111,16 +111,25 @@ print(cleaned_sales)
 import duckdb
 
 # Connect to DuckDB
-connection = duckdb.connect(database='london_team')
+con = duckdb.connect(database='sales_database')
 
 
-# Write DataFrame to DuckDB
-table_name = 'final_sales'
+# Load DataFrame into DuckDB as a table
+cleaned_sales = pd.DataFrame(cleaned_sales)  # Define or load your DataFrame
+con.register('cleaned_sales_table', cleaned_sales)
 
-df.to_sql(final_sales, connection, if_exists='replace', index=False)
+# Query the registered table in DuckDB
+result = con.execute('SELECT * FROM cleaned_sales_table')
 
 
+# Fetch and iterate through the result set
+while True:
+    row = result.fetchone()
+    if row is None:
+        break
+    print(row)
 
-
+# Close connection
+con.close()
 
 
